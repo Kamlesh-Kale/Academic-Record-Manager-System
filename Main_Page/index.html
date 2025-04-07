@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="link.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <script src="myscript.js"></script>
+
+</head>
+
+<body>
+    <div class="container">
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <img src="https://pbs.twimg.com/profile_images/1172993927/11_400x400.JPG" alt="Logo" class="logo">
+                <h2>BVDU-DET</h2>
+            </div>
+            <ul class="sidebar-menu">
+                <li><i class="fas fa-th-large"></i><a href="index.html" class="btn">Dashboard</a></li>
+                <li><i class="fas fa-book"></i><a href="allrecord.html" class="btn">All Records</a></li>
+                <li><i class="fas fa-chart-bar"></i><a href="collegemarksheet.html" class="btn">College Marksheets</a></li>
+                <li><i class="fas fa-user-graduate"></i><a href="social.html" class="btn">Social/Extra Curricular Activities</a></li>
+                <li><i class="fas fa-chalkboard-teacher"></i><a href="events.html" class="btn">Events/Workshops</a></li>
+                <li><i class="fas fa-pencil-alt"></i><a href="others.html" class="btn">Others</a></li>
+            </ul>
+        </div>
+        <div class="main-content" id="main-content">
+            <div class="header">
+                <span class="menu-icon"><i class="fas fa-bars"onclick="toggleSidebar()" ></i></span>
+                <h1>Dashboard</h1>
+                <div class="user-profile">
+                    <h3 id="user-email">Loading...</h3> <!-- Dynamic email here -->
+                </div>
+                
+            </div>
+            <div class="statistics">
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-graduation-cap"></i></div>
+                    <div class="stat-info">
+                        <h3>Total Records</h3>
+                        <p>12</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-book"></i></div>
+                    <div class="stat-info">
+                        <h3>Uploaded Records</h3>
+                        <p>6</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-chalkboard-teacher"></i></div>
+                    <div class="stat-info">
+                        <h3>Student Profile</h3>
+                    </div>
+                </div>
+                <div class="stat-card logout-card" onclick="logout()">
+                    <div class="stat-icon"><i class="fas fa-door-open"></i></div>
+                    <div class="stat-info">
+                        <h3>Logout</h3>
+                    </div>
+                </div>                
+            </div>
+            <div>
+                <input type="text" id="name" placeholder="Name">
+                <input type="email" id="email" placeholder="Email">
+                <input type="url" id="fileUrl" placeholder="PDF URL">
+                <button onclick="uploadToSheet()">Submit</button>
+              </div>
+              
+              <h3>Saved Data:</h3>
+              <ul id="sheetData"></ul>
+              
+        </div>
+    </div>
+</body>
+</html>

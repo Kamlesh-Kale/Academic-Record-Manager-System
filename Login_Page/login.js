@@ -30,7 +30,7 @@ document.getElementById("submit").addEventListener("click", () => {
       document.getElementById("message").innerText = "Login successful!";
       // Redirect to index.html
       setTimeout(() => {
-        window.location.href = "index.html";
+        window.location.href = "Main_Page/index.html";
       }, 1000);
     })
     .catch((error) => {
