@@ -7,7 +7,8 @@
     <link rel="stylesheet" href="link.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <script src="myscript.js"></script>
-
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="https://apis.google.com/js/api.js" async defer></script>
 </head>
 
 <body>
@@ -63,16 +64,19 @@
                     </div>
                 </div>                
             </div>
-            <div>
-                <input type="text" id="name" placeholder="Name">
-                <input type="email" id="email" placeholder="Email">
-                <input type="url" id="fileUrl" placeholder="PDF URL">
-                <button onclick="uploadToSheet()">Submit</button>
+            <div class="container1">
+                <h1>Upload Data to Google Sheets</h1>
+                <div class="form-group">
+                  <input type="text" id="name" placeholder="Name" />
+                  <input type="email" id="email" placeholder="Email" />
+                  <input type="url" id="fileUrl" placeholder="PDF URL" />
+                  <button id="submit">Submit</button>
+                </div>
+                <div>
+                  <h2>Submitted Entries:</h2>
+                  <ul id="dataList"></ul>
+                </div>
               </div>
-              
-              <h3>Saved Data:</h3>
-              <ul id="sheetData"></ul>
-              
         </div>
     </div>
 </body>

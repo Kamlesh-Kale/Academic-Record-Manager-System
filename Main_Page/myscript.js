@@ -1,61 +1,103 @@
 function toggleSidebar() {
-    var sidebar = document.getElementById("sidebar");
-    var mainContent = document.getElementById("main-content");
-    sidebar.style.display = sidebar.style.display === 'none' ? 'block':'none'
- }
+  const sidebar = document.getElementById("sidebar");
+  sidebar.style.display = sidebar.style.display === "none" ? "block" : "none";
+}
 
-document.querySelector('.add-button input[type="file"]').addEventListener('change', function(event) {
-    var files = event.target.files;
-    var pdfList = document.getElementById('pdf-list');
+const CLIENT_ID = "920111331915-flce1ce0ctm4tdh6hro1i3qutenbdhl7.apps.googleusercontent.com";
+const SHEET_ID = "1ZST7t8a_LnJap4k0HgULBePivLczodULLw3qTv3XqkE";
+const SCOPES = "https://www.googleapis.com/auth/spreadsheets";
 
-    for (var i = 0; i < files.length; i++) {
-        var li = document.createElement('li');
-        li.textContent = files[i].name;
-        pdfList.appendChild(li);
-    }
-    event.target.value = '';
-});
+let tokenClient;
 
+window.onload = () => {
+  tokenClient = google.accounts.oauth2.initTokenClient({
+    client_id: CLIENT_ID,
+    scope: SCOPES,
+    callback: (tokenResponse) => {
+      gapi.client.setToken(tokenResponse);
+      loadData();
+    },
+  });
 
-const scriptURL = "https://script.google.com/macros/s/https://script.google.com/macros/s/AKfycbxFjlimwNf9hRzkQwIxcckTNx0037T8l2dF9rHTkGy79HuywDuAhlMROiSKURsHTuKl/exec/exec";
-
-window.uploadToSheet = async () => {
-  const name = document.getElementById("name").value;
-  const email = document.getElementById("email").value;
-  const url = document.getElementById("fileUrl").value;
-
-  const data = { name, email, url };
-
-  try {
-    const res = await fetch(scriptURL, {
-      method: "POST",
-      body: JSON.stringify(data),
-      headers: {
-        "Content-Type": "application/json"
-      }
+  gapi.load("client", async () => {
+    await gapi.client.init({
+      discoveryDocs: ["https://sheets.googleapis.com/$discovery/rest?version=v4"],
     });
-    const result = await res.text();
-    alert(result);
-    loadSheetData(); // refresh list
-  } catch (err) {
-    console.error("Upload failed", err);
-  }
-};
+  });
 
-async function loadSheetData() {
-  try {
-    const res = await fetch(scriptURL);
-    const data = await res.json();
-    const list = document.getElementById("sheetData");
-    list.innerHTML = "";
-    data.forEach(entry => {
-      const li = document.createElement("li");
-      li.innerHTML = `<strong>${entry.name}</strong> (${entry.email}): <a href="${entry.url}" target="_blank">View PDF</a>`;
-      list.appendChild(li);
-    });
-  } catch (err) {
-    console.error("Fetch failed", err);
+  document.getElementById("submit").addEventListener("click", () => {
+    ensureSignedIn(appendData);
+  });
+}
+
+function ensureSignedIn(callback) {
+  if (!gapi.client.getToken()) {
+    tokenClient.requestAccessToken({ prompt: "consent" });
+  } else {
+    callback();
   }
 }
 
-window.onload = loadSheetData;
+async function appendData() {
+  const name = document.getElementById("name").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const fileUrl = document.getElementById("fileUrl").value.trim();
+
+  if (!name || !email || !fileUrl) {
+    alert("❗ All fields are required.");
+    return;
+  }
+
+  const values = [[name, email, fileUrl]];
+  const body = { values };
+
+  try {
+    const response = await gapi.client.sheets.spreadsheets.values.append({
+      spreadsheetId: SHEET_ID,
+      range: "Sheet1!A:C",
+      valueInputOption: "RAW",
+      insertDataOption: "INSERT_ROWS",
+      resource: body,
+    });
+
+    console.log("✅ Data appended:", response);
+    alert("✅ Data submitted!");
+    loadData();
+  } catch (error) {
+    console.error("❌ Error while appending:", error);
+    alert("❌ Failed to add data: " + (error?.message || JSON.stringify(error)));
+  }
+}
+
+
+
+function loadData() {
+  gapi.client.sheets.spreadsheets.values
+    .get({
+      spreadsheetId: SHEET_ID,
+      range: "Sheet1!A:C",
+    })
+    .then((response) => {
+      const data = response.result.values || [];
+      const list = document.getElementById("dataList");
+      list.innerHTML = "";
+
+      // Skip header row
+      data.slice(1).forEach(([name, email, url]) => {
+        const li = document.createElement("li");
+        li.innerHTML = `<strong>${name}</strong> (${email}) – <a href="${url}" target="_blank">PDF</a>`;
+        list.appendChild(li);
+      });
+    });
+}
+
+function ensureSignedIn(callback) {
+  if (!gapi.client.getToken()) {
+    console.log("🔐 Requesting access token...");
+    tokenClient.requestAccessToken({ prompt: "consent" });
+  } else {
+    console.log("✅ Already signed in, running callback...");
+    callback();
+  }
+}
+
